@@ -72,7 +72,7 @@ class mariadb::cluster (
   $package_names           = $mariadb::params::cluster_package_names,
   $package_ensure          = $mariadb::params::cluster_package_ensure,
   $galera_name             = $mariadb::params::galera_package_name,
-  $galera_ensure           = $mariadb::params::galera_package_ensure,
+  $galera_ensure           = $mariadb::params::cluster_package_ensure,
   $debiansysmaint_password = undef,
   $status_password         = undef,
   $repo_version            = '5.5',
@@ -127,7 +127,7 @@ class mariadb::cluster (
     require => Class['mariadb::server'],
   }
 
-  if $wsrep_sst_method == 'xtrabackup' {
+  if $wsrep_sst_method == 'xtrabackup' or $wsrep_sst_method == 'xtrabackup-v2' {
     ensure_packages(['percona-xtrabackup'])
   }
 

@@ -34,6 +34,8 @@
 #     If true, manage the service.
 #   [*manage_repo*]
 #     If true, manage the yum or apt repo.
+#   [*mirror*]
+#     Set the URL to the download mirror (Note: All but the operatingsystem /debian|/ubuntu)
 #   [*config_hash*]   - hash of config parameters that need to be set.
 #
 # Actions:
@@ -52,9 +54,10 @@ class mariadb::server (
   $debiansysmaint_password = undef,
   $config_hash             = {},
   $enabled                 = true,
-  $repo_version            = '5.5',
+  $repo_version            = $mariadb::params::repo_version,
   $manage_service          = true,
   $manage_repo             = true,
+  $mirror                  = $mariadb::params::default_mirror,
 ) inherits mariadb::params {
 
   class { 'mariadb':
@@ -62,6 +65,7 @@ class mariadb::server (
     package_ensure => $client_package_ensure,
     repo_version   => $repo_version,
     manage_repo    => $manage_repo,
+    mirror         => $mirror,
   }
 
   Class['mariadb::server'] -> Class['mariadb::config']
@@ -72,7 +76,7 @@ class mariadb::server (
 
   package { $package_names:
     ensure  => $package_ensure,
-    require => Package[$client_package_names] 
+    require => Package[$client_package_names]
   }
 
   file { '/var/log/mysql/error.log':
@@ -96,10 +100,11 @@ class mariadb::server (
     $piddir = dirname($mariadb::params::pidfile)
 
     file { $piddir:
-      ensure    => directory,
-      owner     => 'mysql',
-      group     => 'mysql',
-      mode      => '0755',
+      ensure  => directory,
+      owner   => 'mysql',
+      group   => 'root',
+      mode    => '0755',
+      require => Package[$package_names],
     }
 
     -> service { 'mariadb':

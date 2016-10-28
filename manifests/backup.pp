@@ -7,6 +7,8 @@
 #   [*backuppassword*] - The password of the mariadb backup user.
 #   [*backupdir*]      - The target directory of the mariadbdump.
 #   [*backupcompress*] - Boolean to compress backup with bzip2.
+#   [*backupdays*]     - Number of days of backups to keep.
+#   [*onefile*]        - Dump all DBs into one file?
 #
 # Actions:
 #   GRANT SELECT, RELOAD, LOCK TABLES ON *.* TO 'user'@'localhost'
@@ -21,19 +23,23 @@
 #     backuppassword => 'mypassword',
 #     backupdir      => '/tmp/backups',
 #     backupcompress => true,
+#     backupdays     => 30,
 #   }
 #
 class mariadb::backup (
   $backupuser,
   $backuppassword,
   $backupdir,
+  $backupdays = 30,
   $backupcompress = true,
+  $onefile = true,
   $ensure = 'present'
 ) {
 
   database_user { "${backupuser}@localhost":
     ensure        => $ensure,
     password_hash => mysql_password($backuppassword),
+    require       => Class['mariadb::server'],
   }
 
   database_grant { "${backupuser}@localhost":
@@ -45,8 +51,8 @@ class mariadb::backup (
     ensure  => $ensure,
     command => '/usr/local/sbin/mysqlbackup.sh',
     user    => 'root',
-    hour    => 23,
-    minute  => 5,
+    hour    => fqdn_rand(5),
+    minute  => fqdn_rand(59),
     require => File['mysqlbackup.sh'],
   }
 

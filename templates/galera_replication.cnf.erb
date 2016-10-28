@@ -1,7 +1,13 @@
-# This file is managed by Puppet. DO NOT EDIT 
+# This file is managed by Puppet. DO NOT EDIT
 
+<%- if @repo_version == 5.5 or @repo_version == "5.5" -%>
 [mysqld]
+<%- else -%>
+[galera]
+wsrep_on=ON
+<%- end -%>
 wsrep_provider = <%= @wsrep_provider %>
+wsrep_node_name = <%= hostname %>
 wsrep_cluster_address = 'gcomm://<%= @cluster_peer %>'
 wsrep_cluster_name = <%= @wsrep_cluster_name %>
 wsrep_sst_auth = '<%= @wsrep_sst_auth %>'
@@ -14,3 +20,9 @@ binlog_format = ROW
 default_storage_engine = InnoDB
 innodb_autoinc_lock_mode = 2
 innodb_locks_unsafe_for_binlog = 1
+
+<%- if @wsrep_sst_method == 'xtrabackup' or @wsrep_sst_method == 'xtrabackup-v2' -%>
+[sst]
+streamfmt = xbstream
+datadir = /var/lib/mysql
+<%- end -%>
