@@ -28,7 +28,7 @@ class mariadb (
   $package_ensure = 'present',
   $package_names  = $mariadb::params::client_package_names,
   $repo_version   = $mariadb::params::repo_version,
-  $manage_repo    = true,
+  $manage_repo    = false,
   $mirror         = $mariadb::params::default_mirror,) inherits mariadb::params {
   if $manage_repo == true {
     # Set up repositories

@@ -80,7 +80,7 @@ class mariadb::cluster (
   $enabled                 = true,
   $single_cluster_peer     = true,
   $manage_status           = true,
-  $manage_repo             = true,
+  $manage_repo             = false,
 ) inherits mariadb::params {
 
   package { $galera_name:

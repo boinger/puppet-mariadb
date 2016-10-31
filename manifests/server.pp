@@ -56,7 +56,7 @@ class mariadb::server (
   $enabled                 = true,
   $repo_version            = $mariadb::params::repo_version,
   $manage_service          = true,
-  $manage_repo             = true,
+  $manage_repo             = false,
   $mirror                  = $mariadb::params::default_mirror,
 ) inherits mariadb::params {
 
